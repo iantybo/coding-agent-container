@@ -11,53 +11,6 @@ Installed CLIs:
 - GitHub Copilot CLI
 - CodeRabbit CLI
 
-## Why this shape
-
-- `ubuntu:24.04` so the container feels like a fuller coding workstation instead of a thin runtime image.
-- Node.js 22 is installed on top because GitHub Copilot CLI currently requires Node.js 22+.
-- Non-root runtime user because Claude's `--dangerously-skip-permissions` mode is intended for non-root container users.
-- Auth is env-first so secrets stay out of the image.
-- Tool state is persisted through bind mounts so interactive logins can survive container restarts.
-
-Included general-purpose tooling:
-
-- `build-essential`, `make`, `python3`, `python3-pip`, `python3-venv`
-- `git`, `git-lfs`, `gh`, `openssh-client`, `rsync`
-- `ripgrep`, `fd`, `jq`, `tree`, `tmux`, `vim`, `nano`, `less`
-- `shellcheck`, `curl`, `wget`, `dnsutils`, `zip`, `unzip`
-
-## Files
-
-- [Dockerfile](./Dockerfile)
-- [compose.yaml](./compose.yaml)
-- [.env.example](./.env.example)
-
-## Mount plan
-
-Required:
-
-- Your Git repo at `/workspace`
-
-Recommended persistent state mounts:
-
-- `/home/agent/.claude`
-- `/home/agent/.claude.json`
-- `/home/agent/.coderabbit`
-- `/home/agent/.config/claude`
-- `/home/agent/.local/share/claude`
-
-The compose file bind-mounts the live host Claude and CodeRabbit state directly from `${HOME}`, instead of copying snapshots into the workspace.
-
-## Auth plan
-
-Preferred non-interactive auth for demos:
-
-- Claude Code: `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN`
-
-CodeRabbit should be treated as persisted CLI state instead of env-based auth in this harness. Copy or mount `~/.coderabbit` so the container sees your existing `auth.json`.
-
-Interactive login can still work if you persist the mounted state directories and run the login commands inside the container.
-
 ## Quickstart: run against a local repo
 
 Prereqs: Docker Desktop running, and the host `claude` CLI logged in once (so `~/.claude*` exists) and the host `coderabbit` CLI logged in once (so `~/.coderabbit/auth.json` exists). The container inherits both via bind mounts — you don't need to copy API keys around.
@@ -110,25 +63,52 @@ Notes:
 - If `coderabbit review` reports "No files found for review" (single-branch repo with no remote), pass `--base-commit "$(git rev-list --max-parents=0 HEAD)"`. The bundled `coderabbit-review` wrapper handles this for you.
 - If `docker compose build` fails with `error getting credentials ... User canceled`, accept the macOS keychain prompt and retry.
 
-## Demo commands
+## Why this shape
 
-Start the agents with low-friction defaults:
+- `ubuntu:24.04` so the container feels like a fuller coding workstation instead of a thin runtime image.
+- Node.js 22 is installed on top because GitHub Copilot CLI currently requires Node.js 22+.
+- Non-root runtime user because Claude's `--dangerously-skip-permissions` mode is intended for non-root container users.
+- Auth is env-first so secrets stay out of the image.
+- Tool state is persisted through bind mounts so interactive logins can survive container restarts.
 
-```bash
-claude-yolo
-```
+Included general-purpose tooling:
 
-Run CodeRabbit after the agent finishes:
+- `build-essential`, `make`, `python3`, `python3-pip`, `python3-venv`
+- `git`, `git-lfs`, `gh`, `openssh-client`, `rsync`
+- `ripgrep`, `fd`, `jq`, `tree`, `tmux`, `vim`, `nano`, `less`
+- `shellcheck`, `curl`, `wget`, `dnsutils`, `zip`, `unzip`
 
-```bash
-coderabbit-review
-```
+## Files
 
-For agent-oriented JSON output instead of plain text:
+- [Dockerfile](./Dockerfile)
+- [compose.yaml](./compose.yaml)
+- [.env.example](./.env.example)
 
-```bash
-coderabbit review --agent
-```
+## Mount plan
+
+Required:
+
+- Your Git repo at `/workspace`
+
+Recommended persistent state mounts:
+
+- `/home/agent/.claude`
+- `/home/agent/.claude.json`
+- `/home/agent/.coderabbit`
+- `/home/agent/.config/claude`
+- `/home/agent/.local/share/claude`
+
+The compose file bind-mounts the live host Claude and CodeRabbit state directly from `${HOME}`, instead of copying snapshots into the workspace.
+
+## Auth plan
+
+Preferred non-interactive auth for demos:
+
+- Claude Code: `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN`
+
+CodeRabbit should be treated as persisted CLI state instead of env-based auth in this harness. Copy or mount `~/.coderabbit` so the container sees your existing `auth.json`.
+
+Interactive login can still work if you persist the mounted state directories and run the login commands inside the container.
 
 ## Suggested demo flow
 
