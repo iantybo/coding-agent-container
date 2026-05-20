@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(coderabbit auth *)",
+      "Bash(docker compose *)",
+      "Bash(nohup bash -c 'docker compose run --rm -T agentic bash -lc \"cd /workspace && claude --dangerously-skip-permissions --model claude-opus-4-5 -p \\\\\"\\\\$\\(cat PROMPT.md\\)\\\\\" 2>&1\"')",
+      "Bash(echo \"launched pid=$!\")",
+      "Bash(git config *)",
+      "Bash(git log *)"
+    ]
+  }
+}

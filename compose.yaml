@@ -1,0 +1,24 @@
+services:
+  agentic:
+    build:
+      context: .
+      args:
+        USER_UID: ${LOCAL_UID:-1000}
+        USER_GID: ${LOCAL_GID:-1000}
+    image: agentic-coding-demo:latest
+    stdin_open: true
+    tty: true
+    working_dir: /workspace
+    environment:
+      WORKSPACE: /workspace
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_AUTH_TOKEN: ${ANTHROPIC_AUTH_TOKEN:-}
+      ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL:-}
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+    volumes:
+      - ${HOST_REPO:?set HOST_REPO}:/workspace
+      - ${HOME}/.claude:/home/agent/.claude
+      - ${HOME}/.claude.json:/home/agent/.claude.json
+      - ${HOME}/.config/claude:/home/agent/.config/claude
+      - ${HOME}/.local/share/claude:/home/agent/.local/share/claude
+      - ${HOME}/.coderabbit:/home/agent/.coderabbit
