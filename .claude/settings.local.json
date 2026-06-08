@@ -6,7 +6,17 @@
       "Bash(nohup bash -c 'docker compose run --rm -T agentic bash -lc \"cd /workspace && claude --dangerously-skip-permissions --model claude-opus-4-5 -p \\\\\"\\\\$\\(cat PROMPT.md\\)\\\\\" 2>&1\"')",
       "Bash(echo \"launched pid=$!\")",
       "Bash(git config *)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Bash(chmod +x quickstart.sh)",
+      "Bash(bash -n quickstart.sh)",
+      "Bash(bash -n run.sh)",
+      "Bash(command -v fzf gum dialog whiptail)",
+      "Read(//Users/ianbowers/.coderabbit/**)",
+      "Bash(python3 -c \"import json,sys; print\\(list\\(json.load\\(sys.stdin\\).keys\\(\\)\\)\\)\")",
+      "Bash(DOCKER_BUILDKIT=1 docker build -t agentic-coding-demo:latest .)",
+      "Bash(DOCKER_BUILDKIT=1 docker build --build-arg USER_UID=501 --build-arg USER_GID=20 -t agentic-coding-demo:latest .)",
+      "Bash(DOCKER_BUILDKIT=1 docker build --progress=plain --build-arg USER_UID=501 --build-arg USER_GID=20 -t agentic-coding-demo:latest .)",
+      "Bash(docker run --rm ubuntu:24.04 bash -c ' *)"
     ]
   }
 }

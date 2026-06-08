@@ -17,8 +17,11 @@ services:
       CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
     volumes:
       - ${HOST_REPO:?set HOST_REPO}:/workspace
-      - ${HOME}/.claude:/home/agent/.claude
-      - ${HOME}/.claude.json:/home/agent/.claude.json
+      # Claude config sources default to the host login. quickstart.sh overrides
+      # CLAUDE_CONFIG_* to a clean throwaway dir so the container authenticates
+      # purely via ANTHROPIC_API_KEY (no competing host OAuth state).
+      - ${CLAUDE_CONFIG_DIR:-${HOME}/.claude}:/home/agent/.claude
+      - ${CLAUDE_CONFIG_JSON:-${HOME}/.claude.json}:/home/agent/.claude.json
       - ${HOME}/.config/claude:/home/agent/.config/claude
       - ${HOME}/.local/share/claude:/home/agent/.local/share/claude
       - ${HOME}/.coderabbit:/home/agent/.coderabbit

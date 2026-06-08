@@ -28,15 +28,15 @@ That creates `~/.coderabbit/auth.json`, which `compose.yaml` bind-mounts into th
 From this harness directory:
 
 ```bash
-# 1. Point at your repo and wire auth into .env
+# 1. Point at your repo and wire auth into .env.
+#    ANTHROPIC_API_KEY is read from your host environment.
 cp .env.example .env
 REPO=/absolute/path/to/your/repo            # <-- edit me
-CRED=$(security find-generic-password -s "Claude Code" -w)   # macOS keychain
 cat > .env <<EOF
 HOST_REPO=$REPO
 LOCAL_UID=$(id -u)
 LOCAL_GID=$(id -g)
-ANTHROPIC_API_KEY=$CRED
+ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
 EOF
 
 # 2. Build (cached after the first run)
@@ -49,6 +49,21 @@ docker compose run --rm agentic
 docker compose run --rm -T agentic bash -lc \
   'cd /workspace && claude --dangerously-skip-permissions -p "$(cat PROMPT.md)"'
 ```
+
+## Quickstart
+
+The fastest path: pick a directory to mount with an `fzf` browser, hand Claude Code a prompt, and let it run in yolo mode.
+
+```bash
+export ANTHROPIC_API_KEY=...           # from your host environment
+./quickstart.sh "add a /health endpoint and tests"
+```
+
+`quickstart.sh` opens an `fzf` directory browser so you can navigate the filesystem and mount any directory as `/workspace` (Enter descends, pick `.` to mount the current dir, `..` to go up). If you omit the prompt, it asks for one interactively. CodeRabbit auth is auto-detected from `~/.coderabbit/auth.json` (mounted into the container); the script warns if you aren't logged in.
+
+Requires [`fzf`](https://github.com/junegunn/fzf) on the host (`brew install fzf`).
+
+Defaults: the model is `claude-opus-4-8` and Claude runs with `--dangerously-skip-permissions`. Skip the browser by setting `HOST_REPO=...`; override the model with `CLAUDE_MODEL=...`.
 
 Inside the container you have `claude-yolo`, `codex-yolo`, `copilot-yolo`, and `coderabbit-review` on `PATH`. A typical loop:
 

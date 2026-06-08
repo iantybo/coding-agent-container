@@ -63,9 +63,9 @@ RUN npm install -g \
     @openai/codex
 
 RUN temp_home="$(mktemp -d)" \
- && HOME="$temp_home" /bin/sh -c 'curl -fsSL https://cli.coderabbit.ai/install.sh | sh' \
- && coderabbit_bin="$(find "$temp_home" /root/.local/bin -type f -name coderabbit 2>/dev/null | head -n 1)" \
- && cr_bin="$(find "$temp_home" /root/.local/bin -type f -name cr 2>/dev/null | head -n 1)" \
+ && HOME="$temp_home" /bin/sh -c 'curl -fsSL https://cli.coderabbit.ai/install.sh | sh' || true \
+ && coderabbit_bin="$(find "$temp_home" -type f -name coderabbit 2>/dev/null | head -n 1 || true)" \
+ && cr_bin="$(find "$temp_home" -type f -name cr 2>/dev/null | head -n 1 || true)" \
  && test -n "$coderabbit_bin" \
  && install -m 0755 "$coderabbit_bin" /usr/local/bin/coderabbit \
  && if [ -n "$cr_bin" ]; then install -m 0755 "$cr_bin" /usr/local/bin/cr; else ln -sf /usr/local/bin/coderabbit /usr/local/bin/cr; fi \
