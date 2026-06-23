@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# "dangerous" auto-approves all tools — the Devin equivalent of the other
+# yolo wrappers' skip-all-approvals behavior. Pair with -p/--print for a
+# fully non-interactive run, e.g.: devin-yolo -p -- "fix the failing tests"
+exec devin --permission-mode dangerous "$@"

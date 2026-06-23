@@ -71,10 +71,24 @@ RUN temp_home="$(mktemp -d)" \
  && if [ -n "$cr_bin" ]; then install -m 0755 "$cr_bin" /usr/local/bin/cr; else ln -sf /usr/local/bin/coderabbit /usr/local/bin/cr; fi \
  && rm -rf "$temp_home"
 
+# Devin CLI — installs the Linux build into $HOME/.local/bin; pull the binary
+# out to a system path so it's available regardless of the runtime HOME.
+# The installer drops devin into $HOME/.local/bin then auto-launches an
+# interactive login, which exits non-zero in a build context ("Login
+# canceled"). Tolerate that with `|| true` — auth happens at runtime via the
+# mounted credentials, not at build time — and verify the binary landed.
+RUN temp_home="$(mktemp -d)" \
+ && HOME="$temp_home" /bin/bash -c 'curl -fsSL https://cli.devin.ai/install.sh | bash' || true \
+ && devin_bin="$(find "$temp_home" -type f -name devin 2>/dev/null | head -n 1 || true)" \
+ && test -n "$devin_bin" \
+ && install -m 0755 "$devin_bin" /usr/local/bin/devin \
+ && rm -rf "$temp_home"
+
 COPY scripts/entrypoint.sh /usr/local/bin/agentic-entrypoint
 COPY scripts/claude-yolo /usr/local/bin/claude-yolo
 COPY scripts/codex-yolo /usr/local/bin/codex-yolo
 COPY scripts/copilot-yolo /usr/local/bin/copilot-yolo
+COPY scripts/devin-yolo /usr/local/bin/devin-yolo
 COPY scripts/coderabbit-review /usr/local/bin/coderabbit-review
 COPY WORKSPACE_CLAUDE.md /etc/agentic/CLAUDE.md
 
@@ -83,6 +97,7 @@ RUN chmod 0755 \
     /usr/local/bin/claude-yolo \
     /usr/local/bin/codex-yolo \
     /usr/local/bin/copilot-yolo \
+    /usr/local/bin/devin-yolo \
     /usr/local/bin/coderabbit-review
 
 USER ${USERNAME}

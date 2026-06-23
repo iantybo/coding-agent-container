@@ -25,3 +25,8 @@ services:
       - ${HOME}/.config/claude:/home/agent/.config/claude
       - ${HOME}/.local/share/claude:/home/agent/.local/share/claude
       - ${HOME}/.coderabbit:/home/agent/.coderabbit
+      # Devin CLI: credentials.toml lives under ~/.local/share/devin; config
+      # (incl. permission mode) under ~/.config/devin. The container reuses the
+      # host login directly — same mount-based auth as CodeRabbit.
+      - ${DEVIN_DATA_DIR:-${HOME}/.local/share/devin}:/home/agent/.local/share/devin
+      - ${DEVIN_CONFIG_DIR:-${HOME}/.config/devin}:/home/agent/.config/devin

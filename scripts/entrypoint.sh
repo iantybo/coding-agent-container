@@ -7,7 +7,9 @@ mkdir -p \
   "$HOME/.claude" \
   "$HOME/.coderabbit" \
   "$HOME/.config/claude" \
-  "$HOME/.local/share/claude"
+  "$HOME/.config/devin" \
+  "$HOME/.local/share/claude" \
+  "$HOME/.local/share/devin"
 
 if [ -d "$workspace/.git" ]; then
   git config --global --add safe.directory "$workspace" || true
